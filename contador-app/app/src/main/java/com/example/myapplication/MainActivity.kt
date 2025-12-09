@@ -4,21 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.ui.CounterScreen
+import com.example.myapplication.ui.NameInputScreen
+import com.example.myapplication.ui.SaludoScreen
+import com.example.myapplication.ui.ColumnsScreen
+import com.example.myapplication.ui.FruitListScreen
+import com.example.myapplication.ui.ScaffoldScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,23 +24,44 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var count = remember { mutableStateOf(0) }
+            MyApplicationTheme {
+                // 1. Crear el navController
+                val navController = rememberNavController()
 
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Contador: ${count.value}",
-                    fontSize = 30.sp
-                )
+                // 2. Definir las rutas
+                NavHost(
+                    navController = navController,
+                    startDestination = "counter"
+                ) {
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    // Pantalla 1: el contador
+                    composable("counter") {
+                        CounterScreen(navController)
+                    }
 
-                Button(onClick = { count.value++ }) {
-                    Text(text = "Aumentar")
+                    // Pantalla 2: input de nombre
+                    composable("input") {
+                        NameInputScreen(navController)
+                    }
+                    // Ruta CON argumento
+                    composable("saludo/{name}") { backStackEntry ->
+                        val name = backStackEntry.arguments?.getString("name") ?: ""
+                        SaludoScreen(name)
+                    }
+                    // Pantalla 3: input de nombre Column
+                    composable("column") {
+                        ColumnsScreen()
+                    }
+                    // Pantalla 4: input de nombre fruitList
+                    composable("fruitList") {
+                        FruitListScreen()
+                    }
+                    // Pantalla 5: Ejemplo de scaffold
+                    composable("scaffold") {
+                        ScaffoldScreen()
+                    }
                 }
+                // CounterScreen()
             }
         }
     }
